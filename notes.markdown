@@ -34,7 +34,7 @@
 Utilizar pacote React navigation para criação de routes entre telas
  - Criação de routes de login e register (Concluido)
  - Criar routes apos realização de login ou register  (Concluido)
- - Passar paremetro pela a Screens 
+ - Passar paremetro pela a Screens (Conluido)
 
 ## Criação de Telas 
 

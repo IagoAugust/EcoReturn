@@ -8,12 +8,18 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [redirectToHome, setRedirectToHome] = useState(false);
+  const [register, setRegister ] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (user) => {
       if (user) {
         const userData = await getUserDataFromFirestore(user.uid);
         setUser(userData);
+        if (!register){
+          updateRedirectToHome(true);
+        }else{
+          updateRedirectToHome(false);
+        };
       } else {
         setUser(null);
       }
@@ -30,8 +36,12 @@ export function AuthProvider({ children }) {
     setRedirectToHome(value);
   };
 
+  const updateregister = (value) => {
+    setRegister(value);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, storeUserDataLocally, redirectToHome, updateRedirectToHome }}>
+    <AuthContext.Provider value={{ user, storeUserDataLocally, redirectToHome, updateRedirectToHome, updateregister }}>
       {children}
     </AuthContext.Provider>
   );

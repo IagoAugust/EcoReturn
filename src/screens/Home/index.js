@@ -12,7 +12,7 @@ export function Home(){
     const navigation = useNavigation();
 
     function HandleVendorProduct(){
-        navigation.navigate("VendorProduct");
+        navigation.navigate("Store");
     };
 
     function HandleOrdersProgress(){

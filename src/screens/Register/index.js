@@ -13,7 +13,7 @@ export function Register({ route, navigation }){
     const [name, setName] = useState();
     const [loading, setLoading] = useState();
 
-    const {storeUserDataLocally, updateRedirectToHome } = useAuth();
+    const {storeUserDataLocally, updateRedirectToHome, updateregister } = useAuth();
     const auth = FIREBASE_AUTH;
     
     const singUp = async () => {
@@ -36,12 +36,13 @@ export function Register({ route, navigation }){
                         });    
                         
                         await storeUserDataLocally({ name, email, uid: response.user.uid });
+                        updateregister(false);
                         updateRedirectToHome(false);
                         Alert.alert(
                             'Cadastro Realizado com Sucesso',
                             'Agora realize o login.'
                           );
-                        navigation.goBack();
+                        navigation.navigate('Login');
                     } catch (error) {
                         Alert.alert('Falha ao cadastra no banco', error.message);
                     }

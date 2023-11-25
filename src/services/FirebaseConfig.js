@@ -4,7 +4,7 @@ import { getFirestore } from "firebase/firestore";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
 const firebaseConfig = {
-  // Coloque seu codigo do firebase aqui
+  // Coloque codigo fireabse aqui
 };
 
 export const FIREBASE_APP = initializeApp(firebaseConfig);
