@@ -7,6 +7,15 @@ export const styles = StyleSheet.create({
         backgroundColor: '#e3e6e8', // ecf0f3
         paddingTop: '5%'
       },
+
+    subTitle: {
+        color: '#000',
+        // backgroundColor: '#000',
+        fontSize: 18,
+        marginTop: '2%',
+        textAlign: 'center',
+        maxWidth: '80%'
+    },
     
     button: {
         marginTop: '15%',

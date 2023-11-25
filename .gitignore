@@ -33,3 +33,6 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+#Criticios
+src/services/FirebaseConfig.js

@@ -2,9 +2,7 @@
 - src
   - components
   - routes
-    - index.js
-    - authRoutes.js
-    - insideRoutes.js 
+    -routes.js
   - screens
     - Login 
         - index.js

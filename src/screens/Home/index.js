@@ -4,7 +4,10 @@ import { styles } from "./styles";
 import { FIREBASE_AUTH } from '../../services/FirebaseConfig';
 import { MaterialIcons } from '@expo/vector-icons'; 
 
-export function Home({navigation}){
+export function Home({route, navigation}){
+    
+    const { params } = route;
+    const { CPF, ecocoins, email, endereco, name} = params || {};
 
     function HandleVendorProduct(){
         navigation.navigate("VendorProduct");
@@ -21,6 +24,8 @@ export function Home({navigation}){
     return(
         <View style={styles.container}>    
             
+            <Text style={styles.subTitle} >Seja bem-vindo {name}</Text>
+
             <TouchableOpacity style={styles.button} onPress={HandleVendorProduct} >
                 <Text style={styles.buttonText}>Solicitar Pedido</Text>
             </TouchableOpacity>

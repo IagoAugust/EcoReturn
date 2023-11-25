@@ -14,47 +14,18 @@ import { OrdersProgress } from "../screens/OrdersProgress";
 import { Shop } from "../screens/Shop";
 
 const Stack = createNativeStackNavigator();
-const InsideStack = createNativeStackNavigator();
-
-
-function InsideRoutes(){
-  const navigation = useNavigation();
-  
-  const ProfileButton = () => (
-      <TouchableOpacity
-          onPress={() => navigation.navigate("Profile")}
-      >
-          <FontAwesome name="user-circle-o" size={28} color="#000" />
-      </TouchableOpacity>
-  );
-
-
-  return(
-      <InsideStack.Navigator 
-          screenOptions={{
-              headerStyle: { backgroundColor: '#add185' },
-              headerTitleAlign: 'center',
-              headerLeft: () => <ProfileButton />,
-          }}
-      >
-          <InsideStack.Screen 
-              name="Home" 
-              component={Home}
-              // initialParams={}
-          >
-          </InsideStack.Screen>
-          <InsideStack.Screen name="Profile" component={Profile} options={{title:"Perfil"}} />
-          <InsideStack.Screen name="VendorProduct" component={VendorProduct} options={{title:"Solicitação de Pedido"}} />
-          <InsideStack.Screen name="OrdersProgress" component={OrdersProgress} options={{title:"Pedidos em Andamento"}} />
-          <InsideStack.Screen name="Shop" component={Shop} options={{title:"Shop"}} />
-      </InsideStack.Navigator>
-  );
-}
-
-
 
 export function Routes() {
   const [user, setUser] = useState(null);
+  const navigation = useNavigation();
+
+  const ProfileButton = () => (
+    <TouchableOpacity
+      onPress={() => navigation.navigate("Profile")}
+    >
+      <FontAwesome name="user-circle-o" size={28} color="#000" />
+    </TouchableOpacity>
+  );
 
   useEffect(() => {
     onAuthStateChanged(FIREBASE_AUTH, (user) =>{
@@ -64,9 +35,22 @@ export function Routes() {
 
   return (
   
-    <Stack.Navigator initialRouteName='Login'>
+    <Stack.Navigator initialRouteName='Login' 
+      screenOptions={{
+        headerStyle: { backgroundColor: '#add185' },
+        headerTitleAlign: 'center',
+        headerLeft: () => <ProfileButton />,
+      }}
+    >
       {user ? (
-          <Stack.Screen name='InsideRoutes' component={InsideRoutes}  options={{ headerShown: false }} />
+          // <Stack.Screen name='InsideRoutes' component={InsideRoutes}  options={{ headerShown: false }} />
+          <>
+            <Stack.Screen name="Home" component={Home} options={{title:"Tela Inicial"}} />
+            <Stack.Screen name="Profile" component={Profile} options={{title:"Perfil"}} />
+            <Stack.Screen name="VendorProduct" component={VendorProduct} options={{title:"Solicitação de Pedido"}} />
+            <Stack.Screen name="OrdersProgress" component={OrdersProgress} options={{title:"Pedidos em Andamento"}} />
+            <Stack.Screen name="Shop" component={Shop} options={{title:"Shop"}} />
+          </>
         ) : (
           <>
             <Stack.Screen name='Login' component={Login} options={{ headerShown: false }}/> 

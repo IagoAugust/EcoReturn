@@ -20,14 +20,12 @@ export function Login(){
         try{
             const response = await signInWithEmailAndPassword(auth,email, password);
 
-            const userDocRef = doc(FIRESTORE_DB,"users", response.user.uid);
-            const userDocSnap = await getDoc(userDocRef);
+            const userDocRef = doc(FIRESTORE_DB,"users", response.user.uid); // Verificar dado da UID 
+            const userDocSnap = await getDoc(userDocRef); // Pega os dados 
 
             if (userDocSnap.exists) {
                 const userData = userDocSnap.data();
-
-                console.log(userData)
-                navigation.navigate("Home", { user: "Iago"})
+                navigation.navigate("Home", userData) // Passando para Home 
             } else {
                 Alert.alert("Usuário não reconhecido ");
             }

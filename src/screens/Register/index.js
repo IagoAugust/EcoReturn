@@ -5,8 +5,7 @@ import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../../services/FirebaseConfig';
 
-export function Register({ navigation }){
-
+export function Register({ route, navigation }){
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
     const [passwordConfirm, setPasswordConfirm] = useState();
