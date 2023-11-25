@@ -4,6 +4,7 @@ import { View, Text, Image, TextInput, TouchableOpacity, ActivityIndicator, Aler
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../../services/FirebaseConfig';
+import { useAuth } from '../../context/AuthContext';
 
 export function Register({ route, navigation }){
     const [email, setEmail] = useState();
@@ -12,6 +13,7 @@ export function Register({ route, navigation }){
     const [name, setName] = useState();
     const [loading, setLoading] = useState();
 
+    const {storeUserDataLocally, updateRedirectToHome } = useAuth();
     const auth = FIREBASE_AUTH;
     
     const singUp = async () => {
@@ -32,8 +34,14 @@ export function Register({ route, navigation }){
                             CPF: null,
                             endereco: null 
                         });    
-                        await signOut(auth);
-                        Alert.alert('Cadastro Realizado com Sucesso', 'Agora realize o login.');
+                        
+                        await storeUserDataLocally({ name, email, uid: response.user.uid });
+                        updateRedirectToHome(false);
+                        Alert.alert(
+                            'Cadastro Realizado com Sucesso',
+                            'Agora realize o login.'
+                          );
+                        navigation.goBack();
                     } catch (error) {
                         Alert.alert('Falha ao cadastra no banco', error.message);
                     }

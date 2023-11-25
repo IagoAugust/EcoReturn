@@ -5,33 +5,35 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../../services/FirebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
+import { getUserDataFromFirestore } from "../../services/FirestoreService";
+import { useAuth } from "../../context/AuthContext";
 
 export function Login(){
-
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
     const [loading, setLoading] = useState();
 
-    const auth = FIREBASE_AUTH;
+    const { storeUserDataLocally, updateRedirectToHome } = useAuth();
+    // const auth = FIREBASE_AUTH;
     const navigation = useNavigation(); 
     
     const singIn = async () => {
         setLoading(true);
         try{
-            const response = await signInWithEmailAndPassword(auth,email, password);
+            const response = await signInWithEmailAndPassword(FIREBASE_AUTH,email, password);
+            const userData = await getUserDataFromFirestore(response.user.uid);
 
-            const userDocRef = doc(FIRESTORE_DB,"users", response.user.uid); // Verificar dado da UID 
-            const userDocSnap = await getDoc(userDocRef); // Pega os dados 
+            if(userData){
+                await storeUserDataLocally(userData);
+                
+                updateRedirectToHome(true);
 
-            if (userDocSnap.exists) {
-                const userData = userDocSnap.data();
-                navigation.navigate("Home", userData) // Passando para Home 
-            } else {
-                Alert.alert("Usuário não reconhecido ");
+            }else {
+                Alert.alert('Usuário não reconhecido'); 
             }
 
         } catch (error) {
-            Alert.alert('Falha no Cadastro', error.message);
+            Alert.alert('Falha no Login', error.message);
         } finally {
             setLoading(false);
         }

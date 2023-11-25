@@ -11,10 +11,11 @@ export const styles = StyleSheet.create({
     subTitle: {
         color: '#000',
         // backgroundColor: '#000',
-        fontSize: 18,
+        fontSize: 20,
         marginTop: '2%',
         textAlign: 'center',
-        maxWidth: '80%'
+        maxWidth: '80%',
+        fontWeight: 'bold'
     },
     
     button: {
