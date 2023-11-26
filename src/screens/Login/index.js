@@ -3,7 +3,6 @@ import { styles } from "./styles";
 import { View, Text, Image, TextInput, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../../services/FirebaseConfig';
-import { doc, getDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { getUserDataFromFirestore } from "../../services/FirestoreService";
 import { useAuth } from "../../context/AuthContext";
