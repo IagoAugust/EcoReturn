@@ -15,8 +15,8 @@ export function Home(){
         navigation.navigate("Store");
     };
 
-    function HandleOrdersProgress(){
-        navigation.navigate("OrdersProgress");
+    function HandleOrders(){
+        navigation.navigate("Orders");
     };
 
     function HandleShop(){
@@ -37,8 +37,8 @@ export function Home(){
                 <Text style={styles.buttonText}>Solicitar Pedido</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={HandleOrdersProgress} >
-                <Text style={styles.buttonText}>Pedidos em andamento</Text>
+            <TouchableOpacity style={styles.button} onPress={HandleOrders} >
+                <Text style={styles.buttonText}>Visualizar Pedidos</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.floatingButton} onPress={HandleShop} >

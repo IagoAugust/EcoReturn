@@ -7,11 +7,11 @@ import { Login } from '../screens/Login';
 import { Register } from '../screens/Register';
 import { Home } from '../screens/Home';
 import { Profile } from '../screens/Profile';
-import { OrdersProgress } from '../screens/OrdersProgress';
 import { Shop } from '../screens/Shop';
 import { useAuth } from '../context/AuthContext';
 import { StoreReverseLogistics } from '../screens/StoreReverseLogistics';
 import { ProductReverseLogistics } from '../screens/ProductReverseLogistics';
+import { Orders } from '../screens/Orders';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,9 +39,9 @@ export function Routes() {
           <Stack.Screen name="Profile" component={Profile} options={{ title: 'Perfil' }} />
           <Stack.Screen name="Store" component={StoreReverseLogistics} options={{ title: 'Solicitação de Pedido' }} />
           <Stack.Screen name='ProductReverseLogistics' component={ProductReverseLogistics} options={ ({route}) => {({ title: route.params?.storeName || 'Produto', })} } />
-          <Stack.Screen name="OrdersProgress" component={OrdersProgress} options={{ title: 'Pedidos em Andamento' }} />
+          <Stack.Screen name='Orders' component={Orders} options={{ title: 'Pedidos em Andamento' }} />
           <Stack.Screen name="Shop" component={Shop} options={{ title: 'Shop' }} />
-        </>
+        </> 
       ) : (
         <>
           <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />

@@ -30,9 +30,10 @@ export function Register({ route, navigation }){
                         await setDoc(doc(FIRESTORE_DB, "users", response.user.uid ), {
                             name: name,
                             email: email,
-                            ecocoins: 0,
+                            ecoCoins: 0,
                             CPF: null,
-                            endereco: null 
+                            endereco: null,
+                            uid: response.user.uid
                         });    
                         
                         await storeUserDataLocally({ name, email, uid: response.user.uid });
