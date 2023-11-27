@@ -39,7 +39,7 @@ export function Routes() {
           <Stack.Screen name="Profile" component={Profile} options={{ title: 'Perfil' }} />
           <Stack.Screen name="Store" component={StoreReverseLogistics} options={{ title: 'Solicitação de Pedido' }} />
           <Stack.Screen name='ProductReverseLogistics' component={ProductReverseLogistics} options={ ({route}) => {({ title: route.params?.storeName || 'Produto', })} } />
-          <Stack.Screen name='Orders' component={Orders} options={{ title: 'Pedidos em Andamento' }} />
+          <Stack.Screen name='Orders' component={Orders} options={{ title: 'Pedidos' }} />
           <Stack.Screen name="Shop" component={Shop} options={{ title: 'Shop' }} />
         </> 
       ) : (
