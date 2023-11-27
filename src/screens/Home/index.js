@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, Button, TouchableOpacity } from "react-native";
 import { styles } from "./styles";
-import { FIREBASE_AUTH } from '../../services/FirebaseConfig';
 import { MaterialIcons } from '@expo/vector-icons'; 
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../context/AuthContext";
@@ -27,10 +26,7 @@ export function Home(){
         navigation.navigate("OrderApproval")
     };
 
-    function HandleLogout(){
-        FIREBASE_AUTH.signOut();
-        updateRedirectToHome(false);
-    };
+
 
     return(
         <View style={styles.container}>    
@@ -56,10 +52,6 @@ export function Home(){
 
             <TouchableOpacity style={styles.floatingButton} onPress={HandleShop} >
                 <MaterialIcons name="shopping-cart" size={35} color="black" />
-            </TouchableOpacity>
-            
-            <TouchableOpacity onPress={HandleLogout}>
-                <Text style={{ backgroundColor:'#3880c2'}} >Logout</Text>
             </TouchableOpacity>
         </View>
     );

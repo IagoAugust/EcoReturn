@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert } from "react-native";
+import { View, Text, TextInput, Button, Alert, ScrollView  } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import Modal from "react-native-modal";
+import { styles } from "./styles";
+import { FIREBASE_AUTH } from "../../services/FirebaseConfig";
 
 export function Profile() {
-  const { user, updateUser, deleteUser } = useAuth();
+  const { user, updateUser,  } = useAuth();
   const [editing, setEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState({ ...user });
-  const [isModalVisible, setModalVisible] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
 
   const handleUpdate = async () => {
@@ -19,64 +20,61 @@ export function Profile() {
     }
   };
 
-  const handleDelete = () => {
-    setModalVisible(true);
+  const handleCancel = () => {
+    setEditing(false);
+    // Você também pode reiniciar os campos atualizados para os valores originais, se desejar.
+    setUpdatedUser({ ...user });
   };
 
-  const confirmDelete = async () => {
-    try {
-      await deleteUser(passwordInput);
-      setModalVisible(false);
-      // Lógica adicional após a exclusão, como redirecionar para a tela de login.
-    } catch (error) {
-      console.error("Erro ao excluir conta:", error.message);
-      // Lógica adicional em caso de falha.
-    } finally {
-      setPasswordInput("");
-    }
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-    setPasswordInput("");
-  };
+  function HandleLogout(){
+    FIREBASE_AUTH.signOut();
+    updateRedirectToHome(false);
+  };  
 
   return (
-    <View>
-      <Text>Perfil do usuário {user.name}</Text>
-      {editing ? (
-        <View>
-          <TextInput
-            value={updatedUser.name}
-            onChangeText={(text) => setUpdatedUser({ ...updatedUser, name: text })}
-            placeholder="Nome"
-          />
-          {/* Adicione outros campos de input para os dados do usuário */}
-          <Button title="Salvar" onPress={handleUpdate} />
-        </View>
-      ) : (
-        <View>
-          <Text>Email: {user.email}</Text>
-          <Text>ecoCoins: {user.ecoCoins}</Text>
-          {/* Exiba outros dados do usuário aqui */}
-          <Button title="Editar" onPress={() => setEditing(true)} />
-          <Button title="Excluir Conta" onPress={handleDelete} />
-        </View>
-      )}
-
-      <Modal isVisible={isModalVisible}>
-        <View>
-          <Text>Digite sua senha para confirmar:</Text>
-          <TextInput
-            secureTextEntry
-            value={passwordInput}
-            onChangeText={(text) => setPasswordInput(text)}
-            placeholder="Senha"
-          />
-          <Button title="Cancelar" onPress={closeModal} />
-          <Button title="Excluir Conta" onPress={confirmDelete} />
-        </View>
-      </Modal>
+    <View style={styles.container}>
+      <Text style={styles.headerText}>Perfil do usuário</Text>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {editing ? (
+          <View style={styles.editContainer}>
+            <TextInput
+              style={styles.input}
+              value={updatedUser.name}
+              onChangeText={(text) => setUpdatedUser({ ...updatedUser, name: text })}
+              placeholder="Nome"
+            />
+            <TextInput
+              style={[styles.input, { color: 'gray' }]}
+              value={updatedUser.CPF}
+              onChangeText={(text) => setUpdatedUser({ ...updatedUser, CPF: text })}
+              placeholder="CPF"
+              editable={false}
+            />
+            <TextInput
+              style={styles.input}
+              value={updatedUser.address}
+              onChangeText={(text) => setUpdatedUser({ ...updatedUser, address: text })}
+              placeholder="Endereço"
+            />
+            <View style={styles.buttonContainer}>
+              <Button title="Cancelar" onPress={handleCancel} color="red" />
+              <Button title="Salvar" onPress={handleUpdate} />
+            </View>
+          </View>
+        ) : (
+          <View style={styles.infoContainer}>
+            <Text style={styles.userInfo}>Nome: {user.name}</Text>
+            <Text style={styles.userInfo}>Email: {user.email}</Text>
+            <Text style={styles.userInfo}>CPF: {user.CPF}</Text>
+            <Text style={styles.userInfo}>Endereço: {user.address}</Text>
+            <Text style={styles.userInfo}>ecoCoins: {user.ecoCoins}</Text>
+            <View style={styles.buttonContainer}>
+              <Button title="Sair" onPress={HandleLogout} color={"red"} />
+              <Button title="Editar" onPress={() => setEditing(true)} />
+            </View>
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }

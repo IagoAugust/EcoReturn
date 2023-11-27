@@ -2,15 +2,17 @@ import React, {useState} from "react";
 import { styles } from "./styles";
 import { View, Text, Image, TextInput, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDocs, where, collection } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../../services/FirebaseConfig';
 import { useAuth } from '../../context/AuthContext';
+import { isEmpty } from "lodash";
 
 export function Register({ route, navigation }){
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
     const [passwordConfirm, setPasswordConfirm] = useState();
     const [name, setName] = useState();
+    const [cpf, setCpf] = useState();
     const [loading, setLoading] = useState();
 
     const {storeUserDataLocally, updateRedirectToHome, updateregister } = useAuth();
@@ -24,14 +26,22 @@ export function Register({ route, navigation }){
                 Alert.alert('Nome Incorreto', 'Por favor, insira um nome válido.');
             } else if ( password !== passwordConfirm || password == undefined ){
                 Alert.alert('Senha Incorreta', 'As senhas não coincidem ou são inválidas.');
+            }else if (!validateCPF(cpf)) {
+                Alert.alert('CPF Inválido', 'Por favor, insira um CPF válido.');
             }else{
+
+                const cpfQuery = await getDocs(collection(FIRESTORE_DB, "users"), where("CPF", "==", cpf));
+                if (!isEmpty(cpfQuery.docs)) {
+                    Alert.alert('CPF já cadastrado', 'Já existe um usuário cadastrado com esse CPF.');
+                    return;
+                }
                 const response = await createUserWithEmailAndPassword(auth,email,password);
                     try {
                         await setDoc(doc(FIRESTORE_DB, "users", response.user.uid ), {
                             name: name,
                             email: email,
                             ecoCoins: 0,
-                            CPF: null,
+                            CPF: cpf,
                             endereco: null,
                             uid: response.user.uid
                         });    
@@ -58,6 +68,36 @@ export function Register({ route, navigation }){
     function handleLogin(){
         navigation.navigate('Login');
     }
+
+    function validateCPF(cpf) {
+        cpf = cpf.replace(/\D/g, '');
+
+        if (cpf.length !== 11) {
+            return false;
+        }
+        if (/^(\d)\1+$/.test(cpf)) {
+            return false;
+        }
+        let sum = 0;
+        for (let i = 0; i < 9; i++) {
+            sum += parseInt(cpf.charAt(i)) * (10 - i);
+        }
+        let digit1 = 11 - (sum % 11);
+        digit1 = digit1 > 9 ? 0 : digit1;
+    
+        sum = 0;
+        for (let i = 0; i < 10; i++) {
+            sum += parseInt(cpf.charAt(i)) * (11 - i);
+        }
+        let digit2 = 11 - (sum % 11);
+        digit2 = digit2 > 9 ? 0 : digit2;
+    
+        if (parseInt(cpf.charAt(9)) !== digit1 || parseInt(cpf.charAt(10)) !== digit2) {
+            return false;
+        }
+    
+        return true;
+    }
     
     return(
         <View style={styles.container}>
@@ -76,6 +116,17 @@ export function Register({ route, navigation }){
                 onChangeText={ (text) => {
                     setName(text);
                 } }
+            />
+
+            <TextInput
+                style={styles.input}
+                placeholder="CPF"
+                keyboardType="numeric"
+                placeholderTextColor="black"
+                value={cpf}
+                onChangeText={(text) => {
+                    setCpf(text);
+                }}
             />
 
             <TextInput
