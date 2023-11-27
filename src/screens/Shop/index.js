@@ -1,22 +1,17 @@
-import React, {useEffect, useState} from "react";
-import { Text, View, ScrollView, FlatList, Image, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, View, FlatList, Image, TouchableOpacity } from "react-native";
 import { styles } from "./styles";
-import { getDocs, collection, Firestore } from "firebase/firestore";
-import { FIRESTORE_DB } from "../../services/FirebaseConfig";
+import { getDocs, collection, updateDoc, doc, onSnapshot } from "firebase/firestore";
 import Modal from 'react-native-modal';
 import { useAuth } from "../../context/AuthContext";
-import { updateDoc, doc } from 'firebase/firestore';
+import { FIRESTORE_DB } from "../../services/FirebaseConfig";
 
-// retorna o shop
-export function Shop(){
-
-    // estados
-    const [products,setProducts] = useState([]);
+export function Shop() {
+    const [products, setProducts] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
     const [purchaseMessage, setPurchaseMessage] = useState('');
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -24,7 +19,6 @@ export function Shop(){
                 const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'product'));
                 const data = querySnapshot.docs.map(doc => {
                     const { description, imgUrl, name, value } = doc.data();
-    
                     return { id: doc.id, description, imgUrl, name, value };
                 });
                 setProducts(data);
@@ -32,32 +26,43 @@ export function Shop(){
                 console.error('Erro ao buscar dados do Firestore:', error);
             }
         };
-    
+
+        const userDocRef = doc(FIRESTORE_DB, 'users', user.uid);
+
+        // Adiciona um listener para atualizações em tempo real
+        const unsubscribe = onSnapshot(userDocRef, (doc) => {
+            if (doc.exists()) {
+                const userData = doc.data();
+                // Atualiza o usuário no contexto de autenticação
+                updateUser(userData);
+            }
+        });
+
+        // Executa a busca inicial dos dados
         fetchData();
+
+        // Retorna a função de limpeza do listener
+        return () => unsubscribe();
     }, []);
 
     const handleBuy = async () => {
-        // Verificar se o usuário tem Eco Coins suficientes
         if (user.ecoCoins >= selectedProduct.value) {
             try {
-                // Subtrair o valor do produto das Eco Coins do usuário
                 const newEcoCoins = user.ecoCoins - selectedProduct.value;
 
-                // Atualizar no banco de dados (Firebase) o valor de Eco Coins do usuário
-                const userDocRef = doc(FIRESTORE_DB, 'users', user.uid);  // Substitua 'users' pelo nome da coleção de usuários
+                // Atualiza diretamente na coleção de usuários
+                const userDocRef = doc(FIRESTORE_DB, 'users', user.uid);
                 await updateDoc(userDocRef, { ecoCoins: newEcoCoins });
 
-                // Atualizar a mensagem de sucesso
                 setPurchaseMessage('Compra realizada com sucesso!');
-
                 setTimeout(() => {
                     setModalVisible(false);
+                    setSelectedProduct(null);
                 }, 2000);
             } catch (error) {
                 console.error('Erro ao atualizar dados do Firestore:', error);
             }
         } else {
-            // Exibir mensagem de Eco Coins insuficientes
             alert('Valor de Eco Coins insuficiente');
         }
     };
@@ -67,21 +72,19 @@ export function Shop(){
         setPurchaseMessage('');
     };
 
-    // retorna a tela SHOP
-    return(
+    return (
         <View>
-            
             <View style={styles.container_titulo}>
                 <View style={styles.ecoCoinsContainer}>
-                    <Text style={styles.titulo_ecoCoins}> 
+                    <Text style={styles.titulo_ecoCoins}>
                         EC$ {user.ecoCoins}
                     </Text>
                 </View>
-                <Text style={styles.titulo}> 
-                    Produtos 
+                <Text style={styles.titulo}>
+                    Produtos
                 </Text>
             </View>
-            
+
             <FlatList
                 data={products}
                 keyExtractor={(item) => item.id}
@@ -90,11 +93,11 @@ export function Shop(){
                         onPress={() => {
                             setSelectedProduct(item);
                             setModalVisible(true);
-                        }} 
+                        }}
                         style={styles.productContainer}
                     >
                         <View>
-                            <Image source={{ uri: item.imgUrl }} style={styles.productImage}/>
+                            <Image source={{ uri: item.imgUrl }} style={styles.productImage} />
                         </View>
                         <View>
                             <Text style={styles.productName}>{item.name}</Text>
@@ -121,8 +124,7 @@ export function Shop(){
                                 <Text style={styles.productValue}>EC$ {selectedProduct.value}</Text>
                             </>
                         )}
-                        
-                        
+
                         <TouchableOpacity
                             onPress={handleBuy}
                             style={styles.modalButton}
@@ -130,12 +132,11 @@ export function Shop(){
                             <Text style={styles.modalButtonText}>Comprar</Text>
                         </TouchableOpacity>
 
-                        
                         <TouchableOpacity
-                                onPress={()=>{setModalVisible(false)}}
-                                style={[styles.modalButton, { backgroundColor: 'red' }]}
-                            >
-                                <Text style={styles.modalButtonText}>Cancelar</Text>
+                            onPress={() => { setModalVisible(false) }}
+                            style={[styles.modalButton, { backgroundColor: 'red' }]}
+                        >
+                            <Text style={styles.modalButtonText}>Cancelar</Text>
                         </TouchableOpacity>
 
                         <Text>{purchaseMessage}</Text>

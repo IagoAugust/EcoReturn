@@ -4,10 +4,12 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { FIRESTORE_DB } from "../../services/FirebaseConfig";
 import { useAuth } from "../../context/AuthContext";
 import { styles } from "./styles";
+import { TouchableOpacity } from "react-native";
 
 export function Orders() {
     const { user } = useAuth();
     const [orders, setOrders] = useState([]);
+    const [selectedStatus, setSelectedStatus] = useState('all');
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -32,10 +34,60 @@ export function Orders() {
         fetchOrders();
     }, [user]);
 
+    // Função para filtrar os pedidos com base no status selecionado
+    const filterOrders = (status) => {
+        if (status === 'all') {
+            return orders;
+        } else {
+            return orders.filter(item => item.status === status);
+        }
+    };
+
     return (
         <View style={styles.container}>
+
+            {/* Adicione botões para selecionar o status */}
+            <View style={styles.statusFilterContainer}>
+                <TouchableOpacity
+                    style={[
+                    styles.statusFilterButton,
+                    selectedStatus === 'all' && styles.selectedFilterButton
+                    ]}
+                    onPress={() => setSelectedStatus('all')}
+                >
+                    <Text style={styles.statusFilter}>Todos</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[
+                    styles.statusFilterButton,
+                    selectedStatus === 'Em Andamento' && styles.selectedFilterButton
+                    ]}
+                    onPress={() => setSelectedStatus('Em Andamento')}
+                >
+                    <Text style={styles.statusFilter}>Em Andamento</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[
+                    styles.statusFilterButton,
+                    selectedStatus === 'completed' && styles.selectedFilterButton
+                    ]}
+                    onPress={() => setSelectedStatus('completed')}
+                >
+                    <Text style={styles.statusFilter}>Concluídos</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[
+                    styles.statusFilterButton,
+                    selectedStatus === 'cancelled' && styles.selectedFilterButton
+                    ]}
+                    onPress={() => setSelectedStatus('cancelled')}
+                >
+                    <Text style={styles.statusFilter}>Cancelados</Text>
+                </TouchableOpacity>
+                </View>
+
             <FlatList
-                data={orders}
+                data={filterOrders(selectedStatus)}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <View style={styles.orderContainer}>

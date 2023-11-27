@@ -56,4 +56,32 @@ export const styles = StyleSheet.create({
      cancelled: {
         color: 'red',
     },
+
+    
+    // css dos filtrs
+
+    statusFilterContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+      },
+      
+      statusFilterButton: {
+        backgroundColor: 'lightgray',
+        padding: 10,
+        borderRadius: 5,
+      },
+      
+      selectedFilterButton: {
+        backgroundColor: 'gray',
+      },
+      
+      statusFilter: {
+        color: 'black',
+      },
+      
+      selectedFilter: {
+        color: 'white',
+      },
+      
 });
