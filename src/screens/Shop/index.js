@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import { Text, View, ScrollView, FlatList, Image, TouchableOpacity } from "react-native";
-import Swiper from 'react-native-swiper';
 import { styles } from "./styles";
 import { getDocs, collection, Firestore } from "firebase/firestore";
 import { FIRESTORE_DB } from "../../services/FirebaseConfig";
@@ -16,8 +15,7 @@ export function Shop(){
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const { user } = useAuth();
-    const [buyStatus, setBuyStatus] = useState('');
-    const [userEcoCoins, setUserEcoCoins] = useState(user.ecoCoins);
+    const [purchaseMessage, setPurchaseMessage] = useState('');
 
 
     useEffect(() => {
@@ -38,40 +36,36 @@ export function Shop(){
         fetchData();
     }, []);
 
-    useEffect(() => {
-        setUserEcoCoins(user.ecoCoins);
-    }, [user.ecoCoins]);
-    
-    
-    // const handleBuy = (product) => {
-    //     // if (user.ecoCoins >= product.value) {
-    //     //     // Usuário tem Eco Coins suficientes, realiza a compra
-    //     //     const newEcoCoins = user.ecoCoins - product.value;
-    
-    //     //     try {
-    //     //         // Supondo que você tenha uma coleção 'users' no Firestore
-    //     //         const userDocRef = doc(FIRESTORE_DB, 'users', user.id);
-                
-    //     //         // Atualiza o campo 'ecoCoins' do documento do usuário
-    //     //          updateDoc(userDocRef, {
-    //     //             ecoCoins: newEcoCoins,
-    //     //         });
-    
-    //     //         setUserEcoCoins(newEcoCoins);
-    //     //         setBuyStatus('Comprado com sucesso');
-    
-    //     //         // Limpa a mensagem de status após 3 segundos (ajuste conforme necessário)
-    //     //         setTimeout(() => {
-    //     //             setBuyStatus('');
-    //     //         }, 3000);
-    //     //     } catch (error) {
-    //     //         console.error('Erro ao atualizar Eco Coins no Firestore:', error);
-    //     //     }
-    // // } else {
-    // //     // Usuário não tem Eco Coins suficientes
-    // //     setBuyStatus('Valor de Eco Coins insuficiente');
-    // // }
-    // };
+    const handleBuy = async () => {
+        // Verificar se o usuário tem Eco Coins suficientes
+        if (user.ecoCoins >= selectedProduct.value) {
+            try {
+                // Subtrair o valor do produto das Eco Coins do usuário
+                const newEcoCoins = user.ecoCoins - selectedProduct.value;
+
+                // Atualizar no banco de dados (Firebase) o valor de Eco Coins do usuário
+                const userDocRef = doc(FIRESTORE_DB, 'users', user.uid);  // Substitua 'users' pelo nome da coleção de usuários
+                await updateDoc(userDocRef, { ecoCoins: newEcoCoins });
+
+                // Atualizar a mensagem de sucesso
+                setPurchaseMessage('Compra realizada com sucesso!');
+
+                setTimeout(() => {
+                    setModalVisible(false);
+                }, 2000);
+            } catch (error) {
+                console.error('Erro ao atualizar dados do Firestore:', error);
+            }
+        } else {
+            // Exibir mensagem de Eco Coins insuficientes
+            alert('Valor de Eco Coins insuficiente');
+        }
+    };
+
+    const handleModalClose = () => {
+        setModalVisible(false);
+        setPurchaseMessage('');
+    };
 
     // retorna a tela SHOP
     return(
@@ -115,7 +109,7 @@ export function Shop(){
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => {
-                    setModalVisible(!modalVisible);
+                    handleModalClose();
                 }}
                 style={styles.modalBackgroud}>
                 <View style={styles.modalContainer}>
@@ -130,7 +124,7 @@ export function Shop(){
                         
                         
                         <TouchableOpacity
-                            onPress={() => null}
+                            onPress={handleBuy}
                             style={styles.modalButton}
                         >
                             <Text style={styles.modalButtonText}>Comprar</Text>
@@ -144,7 +138,7 @@ export function Shop(){
                                 <Text style={styles.modalButtonText}>Cancelar</Text>
                         </TouchableOpacity>
 
-                        <Text>{buyStatus}</Text>
+                        <Text>{purchaseMessage}</Text>
                     </View>
                 </View>
             </Modal>
