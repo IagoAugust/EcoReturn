@@ -23,6 +23,10 @@ export function Home(){
         navigation.navigate("Shop");
     };
 
+    function HandleOrderApproval(){
+        navigation.navigate("OrderApproval")
+    };
+
     function HandleLogout(){
         FIREBASE_AUTH.signOut();
         updateRedirectToHome(false);
@@ -40,6 +44,15 @@ export function Home(){
             <TouchableOpacity style={styles.button} onPress={HandleOrders} >
                 <Text style={styles.buttonText}>Visualizar Pedidos</Text>
             </TouchableOpacity>
+
+            {user.typeUser === 'admin' && (
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={HandleOrderApproval}
+                >
+                    <Text style={styles.buttonText}>Aprovação de Pedidos</Text>
+                </TouchableOpacity>
+            )}
 
             <TouchableOpacity style={styles.floatingButton} onPress={HandleShop} >
                 <MaterialIcons name="shopping-cart" size={35} color="black" />

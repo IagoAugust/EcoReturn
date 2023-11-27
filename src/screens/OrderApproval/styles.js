@@ -50,10 +50,33 @@ export const styles = StyleSheet.create({
     inProgress: {
         color: 'blue',
     },
-    completed: {
-        color: 'green',
+
+    buttonsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between', 
+        marginTop: 25, 
     },
-     cancelled: {
-        color: 'red',
+    button: {
+        flex: 1,
+        maxWidth: 120, 
+        height: 35,
+        borderRadius: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1, 
+    },
+    completeButton: {
+        marginLeft: '-15%',
+        borderColor: 'green',
+        // backgroundColor: 'green',
+    },
+    cancelButton: {
+        marginRight: '15%',
+        borderColor: 'red',
+        // backgroundColor: 'red', 
+    },
+    buttonText: {
+        fontSize: 15,
+        fontWeight: 'bold',
     },
 });

@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Alert } from "react-native";
 import { useAuth } from "../../context/AuthContext";
+import Modal from "react-native-modal";
 
 export function Profile() {
   const { user, updateUser, deleteUser } = useAuth();
   const [editing, setEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState({ ...user });
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
 
   const handleUpdate = async () => {
     try {
@@ -17,23 +20,25 @@ export function Profile() {
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      "Excluir Usuário",
-      "Tem certeza que deseja excluir sua conta?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Excluir",
-          onPress: () => {
-            deleteUser();
-            // Lógica adicional após a exclusão, como redirecionar para a tela de login.
-          },
-        },
-      ]
-    );
+    setModalVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await deleteUser(passwordInput);
+      setModalVisible(false);
+      // Lógica adicional após a exclusão, como redirecionar para a tela de login.
+    } catch (error) {
+      console.error("Erro ao excluir conta:", error.message);
+      // Lógica adicional em caso de falha.
+    } finally {
+      setPasswordInput("");
+    }
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setPasswordInput("");
   };
 
   return (
@@ -58,6 +63,20 @@ export function Profile() {
           <Button title="Excluir Conta" onPress={handleDelete} />
         </View>
       )}
+
+      <Modal isVisible={isModalVisible}>
+        <View>
+          <Text>Digite sua senha para confirmar:</Text>
+          <TextInput
+            secureTextEntry
+            value={passwordInput}
+            onChangeText={(text) => setPasswordInput(text)}
+            placeholder="Senha"
+          />
+          <Button title="Cancelar" onPress={closeModal} />
+          <Button title="Excluir Conta" onPress={confirmDelete} />
+        </View>
+      </Modal>
     </View>
   );
 }

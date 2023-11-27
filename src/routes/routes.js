@@ -12,6 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import { StoreReverseLogistics } from '../screens/StoreReverseLogistics';
 import { ProductReverseLogistics } from '../screens/ProductReverseLogistics';
 import { Orders } from '../screens/Orders';
+import { OrderApproval } from '../screens/OrderApproval';
 
 const Stack = createNativeStackNavigator();
 
@@ -41,6 +42,7 @@ export function Routes() {
           <Stack.Screen name='ProductReverseLogistics' component={ProductReverseLogistics} options={ ({route}) => {({ title: route.params?.storeName || 'Produto', })} } />
           <Stack.Screen name='Orders' component={Orders} options={{ title: 'Pedidos' }} />
           <Stack.Screen name="Shop" component={Shop} options={{ title: 'Shop' }} />
+          <Stack.Screen name='OrderApproval' component={OrderApproval} options={{ title: 'Aprovação de pedido' }} />
         </> 
       ) : (
         <>

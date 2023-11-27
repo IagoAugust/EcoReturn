@@ -1,7 +1,7 @@
 import { FIREBASE_AUTH } from "../services/FirebaseConfig";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, deleteUser as deleteFirebaseUser } from "@firebase/auth";
-import { getUserDataFromFirestore, deleteUserDataFromFirestore, updateUserDataInFirestore } from "../services/FirestoreService";  // Ajuste o caminho da importação conforme necessário
+import { getUserDataFromFirestore, deleteUserDataFromFirestore, updateUserDataInFirestore, reauthenticate } from "../services/FirestoreService";  // Ajuste o caminho da importação conforme necessário
 
 const AuthContext = createContext();
 
@@ -52,14 +52,21 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const deleteUser = async () => {
+  const deleteUser = async (password) => {
     try {
-      // Exclui o usuário no Firebase Auth
-      await deleteFirebaseUser(FIREBASE_AUTH.currentUser);
-      // Exclui os dados do usuário no Firestore
-      await deleteUserDataFromFirestore(user.uid);
-      // Limpa dados locais, se necessário
-      setUser(null);
+      // Reautenticação do usuário
+      const reauthResult = await reauthenticate(FIREBASE_AUTH.currentUser, password);
+
+      if (reauthResult) {
+        // Se a reautenticação for bem-sucedida, exclua o usuário no Firebase Auth
+        await deleteFirebaseUser(FIREBASE_AUTH.currentUser);
+        // Exclua os dados do usuário no Firestore
+        await deleteUserDataFromFirestore(user.uid);
+        // Limpe dados locais, se necessário
+        setUser(null);
+      } else {
+        console.error("Falha na reautenticação. A exclusão do usuário não foi realizada.");
+      }
     } catch (error) {
       console.error("Erro ao excluir usuário:", error.message);
       throw error;
